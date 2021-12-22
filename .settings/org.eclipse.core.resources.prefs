@@ -1,3 +1,9 @@
 eclipse.preferences.version=1
+encoding//src/Class/Calculate.java=UTF-8
+encoding//src/Class/ChatServer.java=UTF-8
+encoding//src/Gui/GuiCalculator.java=UTF-8
+encoding//src/Gui/GuiClient.java=UTF-8
 encoding//src/Gui/GuiLogin.java=UTF-8
+encoding//src/Gui/GuiPTB2.java=UTF-8
 encoding//src/Gui/GuiRegister.java=UTF-8
+encoding//src/interf/Calculate_IF.java=UTF-8

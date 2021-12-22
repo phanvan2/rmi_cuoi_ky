@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.border.EmptyBorder;
 
+import Class.Constant;
 import interf.ConnectDB_interface;
 import server.User;
 
@@ -22,6 +23,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -37,7 +40,7 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
-public class GuiLogin extends JFrame implements ActionListener, FocusListener {
+public class GuiLogin extends JFrame implements ActionListener, FocusListener, KeyListener {
 
 	private JPanel contentPane;
 	private JTextField txtUsername;
@@ -45,6 +48,9 @@ public class GuiLogin extends JFrame implements ActionListener, FocusListener {
 	private ImageIcon imageIcon_show, imageIcon_hidden ; 
 	private boolean iconPass = true ; // hidden 
 	JLabel lblWarningUsername; 
+	Constant constant  = new  Constant() ; 
+	ConnectDB_interface obj=null;
+
 	/**
 	 * Launch the application.
 	 */
@@ -92,6 +98,7 @@ public class GuiLogin extends JFrame implements ActionListener, FocusListener {
 		txtUsername.setForeground(Color.gray);
 		txtUsername.addFocusListener(this);
 		panel.add(txtUsername);
+		txtUsername.addKeyListener(this);
 		txtUsername.setColumns(10);
 		
 		txtPassword = new JPasswordField();
@@ -102,6 +109,7 @@ public class GuiLogin extends JFrame implements ActionListener, FocusListener {
 		txtPassword.setEchoChar('\0');
 		txtPassword.addFocusListener(this);
 		panel.add(txtPassword);
+		txtPassword.addKeyListener(this);
 		txtPassword.setColumns(10);
 		
 		JLabel lbUsername = new JLabel("Username: ");
@@ -140,10 +148,10 @@ public class GuiLogin extends JFrame implements ActionListener, FocusListener {
 		panel.add(lbIconPassword);
 		
 		try {
-			BufferedImage bufferImage = ImageIO.read(new File("Image\\eye-look.png"));
+			BufferedImage bufferImage = ImageIO.read(new File(constant.LINK_PATH_IMAGE + "eye-look.png"));
 			imageIcon_show = new ImageIcon(bufferImage.getScaledInstance(21, 15, Image.SCALE_SMOOTH));
 			
-			BufferedImage bufferImage_hidden = ImageIO.read(new File("Image\\hide-private-hidden.png"));
+			BufferedImage bufferImage_hidden = ImageIO.read(new File( constant.LINK_PATH_IMAGE + "hide-private-hidden.png"));
 			imageIcon_hidden = new ImageIcon(bufferImage_hidden.getScaledInstance(21, 15, Image.SCALE_SMOOTH));
 			lbIconPassword.setIcon(imageIcon_hidden);
 			
@@ -209,23 +217,7 @@ public class GuiLogin extends JFrame implements ActionListener, FocusListener {
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if(e.getActionCommand().equals("Login")) {
-			ConnectDB_interface obj=null;
-			try {
-				obj=(ConnectDB_interface)Naming.lookup("rmi://192.168.1.148/login");
-
-				String sql = "SELECT id, username FROM `user` WHERE username LIKE '"+ txtUsername.getText() + "' AND password LIKE '" + scryptWithMD5( txtPassword.getText() ) + "'" ; 
-				User user = obj.findOneData(sql); 
-				if( user == null) {
-					JOptionPane.showMessageDialog(null, "Login Failed"); 
-				}else {
-					System.out.println("user: "+ user.getId() + ": " + user.getName());
-					JOptionPane.showMessageDialog(null, "Login success"); 
-					new GuiClient(user.getName()).setVisible(true); 
-					setVisible(false);
-				}
-			}catch(Exception ee ) {
-				System.out.println(ee.getMessage());
-			}
+			Login();
 		}
 	}
 	
@@ -286,6 +278,46 @@ public class GuiLogin extends JFrame implements ActionListener, FocusListener {
 				txtPassword.setForeground(Color.gray);
 				txtPassword.setEchoChar('\0');
 			}
+		}
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		if( e.getKeyCode() == KeyEvent.VK_ENTER) {
+			if( e.getSource().equals(txtPassword) || e.getSource().equals(txtUsername)) 
+				Login();
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public void Login() {
+		try {
+			obj=(ConnectDB_interface)Naming.lookup("rmi://" +  constant.HOST + "/db");
+
+			String sql = "SELECT id, username FROM `user` WHERE username LIKE '"+ txtUsername.getText() + "' AND password LIKE '" + scryptWithMD5( txtPassword.getText() ) + "'" ; 
+			User user = obj.findOneDataUser(sql); 
+			if( user == null) {
+				JOptionPane.showMessageDialog(null, "Login Failed"); 
+			}else {
+				System.out.println("user: "+ user.getId() + ": " + user.getName());
+				JOptionPane.showMessageDialog(null, "Login success"); 
+				new GuiClient(user.getName(), user.getId()+ "").setVisible(true); 
+				setVisible(false);
+			}
+		}catch(Exception ee ) {
+			System.out.println(ee.getMessage());
 		}
 	}
 	

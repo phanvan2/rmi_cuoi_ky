@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.border.EmptyBorder;
 
+import Class.Constant;
 import interf.ConnectDB_interface;
 
 import javax.swing.JLabel;
@@ -49,6 +50,7 @@ public class GuiRegister extends JFrame implements FocusListener {
 	private boolean iconPassConfirm = true, iconPass = true ; // hidden 
 	private ImageIcon imageIcon_show, imageIcon_hidden ; 
 	JLabel lblWarningUsername; 
+	Constant constant = new Constant() ; 
 	/**
 	 * Launch the application.
 	 */
@@ -79,7 +81,7 @@ public class GuiRegister extends JFrame implements FocusListener {
 		setContentPane(contentPane);
 		
 		try {// set icon giao dien---------------------------
-			Image iconmes = ImageIO.read(new File("Image\\logo_rmi2.jpg"));
+			Image iconmes = ImageIO.read(new File("rmi://" + constant.LINK_PATH_IMAGE + "/logo_rmi2.jpg"));
 			this.setIconImage(iconmes); 
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
@@ -157,10 +159,10 @@ public class GuiRegister extends JFrame implements FocusListener {
 		JLabel lblIconPass = new JLabel("");
 		lblIconPass.setBounds(376, 91, 21, 15);
 		try {
-			BufferedImage bufferImage = ImageIO.read(new File("Image\\eye-look.png"));
+			BufferedImage bufferImage = ImageIO.read(new File( constant.LINK_PATH_IMAGE + "eye-look.png"));
 			imageIcon_show = new ImageIcon(bufferImage.getScaledInstance(21, 15, Image.SCALE_SMOOTH));
 			
-			BufferedImage bufferImage_hidden = ImageIO.read(new File("Image\\hide-private-hidden.png"));
+			BufferedImage bufferImage_hidden = ImageIO.read(new File( constant.LINK_PATH_IMAGE + "hide-private-hidden.png"));
 			imageIcon_hidden = new ImageIcon(bufferImage_hidden.getScaledInstance(21, 15, Image.SCALE_SMOOTH));
 			lblIconCofirmPass.setIcon(imageIcon_hidden);
 			lblIconPass.setIcon(imageIcon_hidden);
@@ -282,7 +284,7 @@ public class GuiRegister extends JFrame implements FocusListener {
 					if( !username.equals("") && !password.equals("") && confirm_password.equals(password)) {
 						ConnectDB_interface obj=null;
 						try {
-							obj=(ConnectDB_interface)Naming.lookup("rmi://192.168.1.148/register");
+							obj=(ConnectDB_interface)Naming.lookup("rmi://" +  constant.HOST + "/db");
 					
 						
 						
@@ -317,7 +319,7 @@ public class GuiRegister extends JFrame implements FocusListener {
 	public void checkUsername(String username) {
 		ConnectDB_interface obj=null;
 		try {
-			obj=(ConnectDB_interface)Naming.lookup("rmi://192.168.1.148/register");
+			obj=(ConnectDB_interface)Naming.lookup("rmi://" +  constant.HOST + "/db");
 
 			String sql = "SELECT COUNT(id) FROM `user` WHERE username LIKE '"+ txtUsername.getText() + "'" ; 
 			int count = obj.countData(sql); 

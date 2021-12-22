@@ -8,6 +8,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Vector;
 
 import interf.ConnectDB_interface;
 
@@ -52,6 +53,7 @@ public class ConnectDB extends UnicastRemoteObject implements ConnectDB_interfac
 	
 	public int changeData(String sql) {
 		int n = 0 ; 
+		System.out.println(sql);
 		try {
 			n = stm.executeUpdate(sql); 
 			System.out.println(n);
@@ -61,7 +63,7 @@ public class ConnectDB extends UnicastRemoteObject implements ConnectDB_interfac
 		return n ; 
 	}
 	
-	public User getData(String sql) {
+	public User getUser(String sql) {
 		ResultSet resultSet = null;  
 		try {
 			resultSet = stm.executeQuery(sql); 
@@ -74,7 +76,45 @@ public class ConnectDB extends UnicastRemoteObject implements ConnectDB_interfac
 		}
 		return null ; 
 	}
-	public User findOneData(String sql) {
+	
+
+	@Override
+	public Vector<Mess> getDataMess(String sql) throws RemoteException {
+		Vector<Mess> vtMess = new Vector<Mess>(); 
+		ResultSet resultSet = null;  
+		try {
+			System.out.println("dget data");
+			resultSet = stm.executeQuery(sql); 
+		//	System.out.println(resultSet);
+			while (resultSet.next()) {
+				vtMess.add(new Mess(resultSet.getInt(1), resultSet.getInt(2),  resultSet.getString(3), resultSet.getString(4), resultSet.getString(5)));
+				//System.out.println(resultSet.getInt(1));
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return vtMess ; 
+	}
+	
+	@Override
+	public Vector<Calc> getDataCalculator(String sql) throws RemoteException {
+		Vector<Calc> vtMess = new Vector<Calc>(); 
+		ResultSet resultSet = null;  
+		try {
+		//	System.out.println("dget data");
+			resultSet = stm.executeQuery(sql); 
+		//	System.out.println(resultSet);
+			while (resultSet.next()) {
+				vtMess.add(new Calc(resultSet.getInt(1), resultSet.getInt(2),  resultSet.getString(3), resultSet.getString(4)));
+				//System.out.println(resultSet.getInt(1));
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return vtMess ; 
+	}
+	
+	public User findOneDataUser(String sql) {
 		ResultSet resultSet = null;  
 		try {
 			resultSet = stm.executeQuery(sql); 
